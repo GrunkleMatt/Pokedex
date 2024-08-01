@@ -3,23 +3,21 @@ $myYellow: #ffcb05;
 
 .pokedex {
   margin: 0 0 2em 0;
-  list-style-type: none;
   padding: 0;
   width: 15em;
   background-color: $myGray;
-  border: 2px solid $myYellow;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.pokedex li {
+.pokemon-list {
   position: relative;
   cursor: pointer;
   padding: 0.5em;
   transition: transform 0.2s ease;
 }
 
-.pokedex li:hover {
+.pokemon-list:hover {
   transform: translateX(0.1em);
   background-color: $myYellow;
   border-radius: 5px;

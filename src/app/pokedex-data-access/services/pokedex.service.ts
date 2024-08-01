@@ -14,7 +14,7 @@ export class PokedexService {
 
   constructor(private http: HttpClient) {}
 
-  getPokedex(offset: number = 0, limit: number = 151): Observable<PokedexList> {
+  getPokedex(offset: number = 0, limit: number): Observable<PokedexList> {
     return this.http.get<PokedexList>(this.pokedexUrl + 'pokemon', {
       params: {
         offset: offset.toString(),

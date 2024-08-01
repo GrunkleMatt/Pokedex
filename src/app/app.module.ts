@@ -6,17 +6,17 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PokedexFeatureModule } from './pokedex-feature/pokedex.module';
 import { PokemonFeatureModule } from './pokemon-feature/pokemon.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
-    AppComponent,
-  ],
+    AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     PokedexFeatureModule,
-    PokemonFeatureModule
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

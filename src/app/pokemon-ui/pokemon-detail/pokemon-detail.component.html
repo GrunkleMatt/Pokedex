@@ -1,7 +1,13 @@
-<div class="pokemon-container">
-  <h1>Name: {{pokemonResult?.name | titlecase}} </h1>
-  <h2 *ngFor="let type of pokemonResult?.types">Type: {{type.type.name | titlecase}}</h2>
-  <h2 *ngFor="let ability of pokemonResult?.abilities">Ability: {{ability.ability.name | titlecase}} </h2>
-  <img [src]="pokemonResult?.sprites?.other?.home?.front_default" [alt]="pokemonResult?.name">
-  <button (click)="buttonClicked.emit(pokemonResult?.name)"> CLICK HERE</button>
+<div class="pokemon-container text-center p-3">
+  <h1 class="display-4">Name: {{ pokemonResult?.name | titlecase }}</h1>
+  <div *ngFor="let type of pokemonResult?.types" class="my-2">
+    <h2 class="h5">Type: {{ type.type.name | titlecase }}</h2>
+  </div>
+  <div *ngFor="let ability of pokemonResult?.abilities" class="my-2">
+    <h2 class="h5">Ability: {{ ability.ability.name | titlecase }}</h2>
+  </div>
+  <img [src]="pokemonResult?.sprites?.other?.home?.front_default" [alt]="pokemonResult?.name" class="img-fluid my-3">
+  <div class="button-container">
+    <button (click)="buttonClicked.emit(pokemonResult?.name)" class="btn btn-warning btn-lg">CLICK HERE</button>
+  </div>
 </div>

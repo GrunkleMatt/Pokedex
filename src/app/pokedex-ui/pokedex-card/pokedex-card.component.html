@@ -1,0 +1,7 @@
+<div class="card mx-auto shadow-sm" style="width: 18rem;">
+  <img [src]="cardResults?.imgUrl" class="card-img-top border border-warning border-2" alt="{{cardResults?.name}}">
+  <div class="card-body text-center">
+    <span class="badge bg-secondary mb-2">{{id + 1}}</span>
+    <h5 class="card-title">{{ cardResults?.name | titlecase }}</h5>
+  </div>
+</div>
