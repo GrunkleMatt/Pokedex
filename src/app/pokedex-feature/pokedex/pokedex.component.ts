@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit, EventEmitter } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
-import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  Observable,
+  Subscription,
+  combineLatest,
+  forkJoin,
+  of,
+} from 'rxjs';
+import { filter, startWith, switchMap } from 'rxjs/operators';
 import {
   PokedexCard,
   PokedexRecord,
@@ -32,6 +39,8 @@ export class PokedexComponent implements OnInit, OnDestroy {
   public searchFormGroup = new FormGroup({
     [this.searchFormControlName]: this.searchFormControl,
   });
+  public pokedexFiltered$: Observable<PokedexRecord> =
+    new Observable<PokedexRecord>();
 
   constructor(
     private pokedexService: PokedexService,
@@ -56,13 +65,22 @@ export class PokedexComponent implements OnInit, OnDestroy {
       .subscribe((value) => {
         this.position = value;
       });
-    this.searchFormControl.valueChanges.subscribe((value) => {
-      console.log(value);
-      if (value) {
-        this.pokedex$?.next(this.onSearch(value));
-      }
-      return;
-    });
+
+    this.pokedexFiltered$ = combineLatest([
+      this.searchFormControl.valueChanges.pipe(startWith('')),
+      this.pokedex$,
+    ]).pipe(
+      switchMap(([searchValue, pokedex]) => {
+        const pokedexFinal = pokedex ?? {}
+        if (!searchValue) {
+          Object.values(pokedexFinal).forEach((value) => {
+            value.isHidden = false;
+          });
+          return of(pokedexFinal);
+        }
+        return of(this.filterPokemons2(searchValue, pokedexFinal));
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -128,34 +146,12 @@ export class PokedexComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSearch(searchTerm: string) {
-    this.searchTerm = searchTerm;
-    return this.filterPokemons();
-  }
-
-  filterPokemons() {
-    let pokemonFiltered: PokedexCard[] = [];
-    if (this.pokedex$?.value) {
-      pokemonFiltered = [...Object.values(this.pokedex$.value)];
-    }
-    if (this.searchTerm && pokemonFiltered) {
-      Object.entries(pokemonFiltered).forEach(([key, value]) => {
-        if (!key.toLowerCase().includes(this.searchTerm.toLowerCase())) {
-          value.isHidden = true;
-        }
-      });
-    }
-    let i = 0;
-    let pokemonFilteredRecord: PokedexRecord = {};
-    while (i < pokemonFiltered.length) {
-      pokemonFilteredRecord[pokemonFiltered[i].name] = {
-        name: pokemonFiltered[i].name,
-        url: pokemonFiltered[i].url,
-        imgUrl: pokemonFiltered[i].imgUrl,
-        isHidden: pokemonFiltered[i].isHidden,
-      };
-      i++;
-    }
-    return pokemonFilteredRecord;
+  filterPokemons2(searchValue: string, pokedex: PokedexRecord) {
+    Object.values(pokedex).forEach((value) => {
+      if (!value.name.includes(searchValue)) {
+        value.isHidden = true;
+      }
+    });
+    return pokedex;
   }
 }

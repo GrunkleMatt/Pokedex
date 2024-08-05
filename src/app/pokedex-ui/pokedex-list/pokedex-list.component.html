@@ -1,8 +1,11 @@
-<app-pokedex-tools-bar (onClickOrder)="onClickOrder.emit()" [searchForm]="searchForm" [searchFormName]="searchFormName"></app-pokedex-tools-bar>
+<app-pokedex-tools-bar (onClickOrder)="onClickOrder.emit()" [searchForm]="searchForm"
+  [searchFormName]="searchFormName"></app-pokedex-tools-bar>
 <div infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50" (scrolled)="scrolledEmited.emit()">
-  <div *ngFor="let pokemon of cardResults; let id = index" class="d-inline-flex pokemon-list col-lg-2 col-sm-4">
-    <a routerLink="/pokemon/{{id+1}}">
-      <app-pokedex-card [cardResults]="pokemon" [id]="id" *ngIf="!pokemon.isHidden"></app-pokedex-card>
-    </a>
-  </div>
+  <ng-container *ngFor="let pokemon of cardResults; let id = index">
+    <div *ngIf="!pokemon.isHidden"  class="d-inline-flex pokemon-list col-lg-2 col-sm-4">
+      <a  routerLink="/pokemon/{{id+1}}">
+        <app-pokedex-card [cardResults]="pokemon" [id]="id"></app-pokedex-card>
+      </a>
+    </div>
+  </ng-container>
 </div>
