@@ -23,7 +23,7 @@ export class PokedexService {
     });
   }
 
-  getPokemon(id?: number): Observable<Pokemon> {
+  getPokemon(id?: number | string): Observable<Pokemon> {
     return this.http.get<Pokemon>(this.pokedexUrl+`pokemon/${id}`);
   }
 }

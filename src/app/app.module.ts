@@ -7,10 +7,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { PokedexFeatureModule } from './pokedex-feature/pokedex.module';
 import { PokemonFeatureModule } from './pokemon-feature/pokemon.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { PokedexNotFoundComponent } from './pokedex-not-found/pokedex-not-found.component';
 
 @NgModule({
   declarations: [
-    AppComponent],
+    AppComponent,
+    PokedexNotFoundComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

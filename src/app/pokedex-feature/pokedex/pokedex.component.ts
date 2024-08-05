@@ -1,3 +1,4 @@
+import { Pokemon } from './../../pokedex-data-access/models/pokemon';
 import { Component, OnDestroy, OnInit, EventEmitter } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import {
@@ -71,14 +72,37 @@ export class PokedexComponent implements OnInit, OnDestroy {
       this.pokedex$,
     ]).pipe(
       switchMap(([searchValue, pokedex]) => {
-        const pokedexFinal = pokedex ?? {}
+        let pokedexFinal = pokedex ?? {};
         if (!searchValue) {
           Object.values(pokedexFinal).forEach((value) => {
             value.isHidden = false;
           });
           return of(pokedexFinal);
         }
-        return of(this.filterPokemons2(searchValue, pokedexFinal));
+        pokedexFinal = this.filterPokemons2(searchValue, pokedexFinal);
+        if (Object.values(pokedexFinal).find((item) => !item.isHidden)) {
+          return of(pokedexFinal);
+        }
+        debugger;
+        return this.pokedexService.getPokemon(searchValue).pipe(
+          switchMap((pokemon) => {
+            const store = this.pokedex$?.value;
+            Object.values(store ?? {}).forEach((value) => {
+              value.isHidden = true;
+            });
+            let storeAdded = store ?? {};
+            storeAdded = {
+              ...storeAdded,
+              [pokemon.name]: {
+                name: pokemon.name,
+                url: `https://pokeapi.co/api/v2/pokemon/${pokemon.id}/`,
+                imgUrl: pokemon.sprites.other.home.front_default,
+                isHidden: false,
+              },
+            };
+            return of(storeAdded);
+          })
+        );
       })
     );
   }
