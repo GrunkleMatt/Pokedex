@@ -134,10 +134,9 @@ export class PokedexComponent implements OnInit, OnDestroy {
   }
 
   filterPokemons() {
-    debugger;
     let pokemonFiltered: PokedexCard[] = [];
     if (this.pokedex$?.value) {
-      pokemonFiltered = [...Object.values(this.pokedex$.value)]
+      pokemonFiltered = [...Object.values(this.pokedex$.value)];
     }
     if (this.searchTerm && pokemonFiltered) {
       Object.entries(pokemonFiltered).forEach(([key, value]) => {
@@ -146,17 +145,17 @@ export class PokedexComponent implements OnInit, OnDestroy {
         }
       });
     }
-    let i = 0
-    let pokemonFilteredRecord: PokedexRecord = {}
-    while (i<pokemonFiltered.length) {
+    let i = 0;
+    let pokemonFilteredRecord: PokedexRecord = {};
+    while (i < pokemonFiltered.length) {
       pokemonFilteredRecord[pokemonFiltered[i].name] = {
         name: pokemonFiltered[i].name,
         url: pokemonFiltered[i].url,
         imgUrl: pokemonFiltered[i].imgUrl,
-        isHidden: pokemonFiltered[i].isHidden
-      }
-      i++
+        isHidden: pokemonFiltered[i].isHidden,
+      };
+      i++;
     }
-    return pokemonFilteredRecord
+    return pokemonFilteredRecord;
   }
 }
