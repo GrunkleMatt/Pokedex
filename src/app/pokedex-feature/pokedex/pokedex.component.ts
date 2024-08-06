@@ -83,7 +83,6 @@ export class PokedexComponent implements OnInit, OnDestroy {
         if (Object.values(pokedexFinal).find((item) => !item.isHidden)) {
           return of(pokedexFinal);
         }
-        debugger;
         return this.pokedexService.getPokemon(searchValue).pipe(
           switchMap((pokemon) => {
             const store = this.pokedex$?.value;

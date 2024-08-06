@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { PokedexList } from '../models/pokedex';
 import { Pokemon } from '../models/pokemon';
 
@@ -24,6 +24,10 @@ export class PokedexService {
   }
 
   getPokemon(id?: number | string): Observable<Pokemon> {
-    return this.http.get<Pokemon>(this.pokedexUrl+`pokemon/${id}`);
+    return this.http.get<Pokemon>(this.pokedexUrl+`pokemon/${id}`).pipe(catchError(error => {
+      console.error('Error caught:', error);
+      throw new Error('Error handled using catchError');
+  }))
+
   }
 }
