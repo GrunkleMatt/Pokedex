@@ -12,6 +12,7 @@ export class PokedexListComponent implements AfterViewInit{
   ngAfterViewInit(): void {
     this.isLoaded.emit()
   }
+  @Input() errorCondition: boolean = false
   @Input() cardResults?: PokedexCard[];
   @Output() scrolledEmited = new EventEmitter<void>()
   @Output() isLoaded = new EventEmitter<void>()

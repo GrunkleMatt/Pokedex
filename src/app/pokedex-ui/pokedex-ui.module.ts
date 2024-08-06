@@ -8,6 +8,7 @@ import { PokedexToolsBarComponent } from './pokedex-tools-bar/pokedex-tools-bar.
 import { PokedexOrderButtonComponent } from './pokedex-tools-bar/pokedex-order-button/pokedex-order-button.component';
 import { PokedexSearchComponent } from './pokedex-tools-bar/pokedex-search/pokedex-search.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PokedexNotFoundComponent } from './pokedex-not-found/pokedex-not-found.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     PokedexCardComponent,
     PokedexToolsBarComponent,
     PokedexOrderButtonComponent,
-    PokedexSearchComponent
+    PokedexSearchComponent,
+    PokedexNotFoundComponent
   ],
   imports: [CommonModule, RouterModule, InfiniteScrollModule, FormsModule,
     ReactiveFormsModule],

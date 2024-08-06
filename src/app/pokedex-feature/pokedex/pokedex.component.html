@@ -1,5 +1,4 @@
 <app-pokedex-list appPokedexList *ngIf="pokedexFiltered$ | async as pokemons"
- [cardResults]="pokemons | fromRecordToArray" [searchForm]="searchFormGroup"
- [searchFormName]="searchFormControlName"
- (scrolledEmited)="loadMore()" (isLoaded)="isPokedexListLoaded()">
+  [cardResults]="pokemons | fromRecordToArray" [searchForm]="searchFormGroup" [searchFormName]="searchFormControlName"
+  (scrolledEmited)="loadMore()" (isLoaded)="isPokedexListLoaded()" [errorCondition]="errorCondition">
 </app-pokedex-list>

@@ -1,11 +1,15 @@
 <app-pokedex-tools-bar (onClickOrder)="onClickOrder.emit()" [searchForm]="searchForm"
   [searchFormName]="searchFormName"></app-pokedex-tools-bar>
-<div infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50" (scrolled)="scrolledEmited.emit()">
+<div infiniteScroll *ngIf="!errorCondition; else pokemonNotFound" [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50" (scrolled)="scrolledEmited.emit()">
   <ng-container *ngFor="let pokemon of cardResults; let id = index">
-    <div *ngIf="!pokemon.isHidden"  class="d-inline-flex pokemon-list col-lg-2 col-sm-4">
-      <a  routerLink="/pokemon/{{id+1}}">
+    <div *ngIf="!pokemon.isHidden" class="d-inline-flex pokemon-list col-lg-2 col-sm-4">
+      <a routerLink="/pokemon/{{id+1}}">
         <app-pokedex-card [cardResults]="pokemon" [id]="id"></app-pokedex-card>
       </a>
     </div>
   </ng-container>
 </div>
+
+<ng-template #pokemonNotFound>
+  <app-pokedex-not-found></app-pokedex-not-found>
+</ng-template>

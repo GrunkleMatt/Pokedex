@@ -3,13 +3,14 @@ import { Component, OnDestroy, OnInit, EventEmitter } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import {
   BehaviorSubject,
+  EMPTY,
   Observable,
   Subscription,
   combineLatest,
   forkJoin,
   of,
 } from 'rxjs';
-import { filter, startWith, switchMap } from 'rxjs/operators';
+import { catchError, filter, startWith, switchMap } from 'rxjs/operators';
 import {
   PokedexCard,
   PokedexRecord,
@@ -43,6 +44,8 @@ export class PokedexComponent implements OnInit, OnDestroy {
   public pokedexFiltered$: Observable<PokedexRecord> =
     new Observable<PokedexRecord>();
 
+  public errorCondition = false
+
   constructor(
     private pokedexService: PokedexService,
     private pokedexDataStoreService: PokedexDataStoreService,
@@ -61,6 +64,7 @@ export class PokedexComponent implements OnInit, OnDestroy {
           this.scrollPositionService.setScrollPosition(window.scrollY);
       }
     });
+
     this.subscription = this.scrollPositionService
       .getScrollPosition()
       .subscribe((value) => {
@@ -72,6 +76,7 @@ export class PokedexComponent implements OnInit, OnDestroy {
       this.pokedex$,
     ]).pipe(
       switchMap(([searchValue, pokedex]) => {
+        this.errorCondition = false;
         let pokedexFinal = pokedex ?? {};
         if (!searchValue) {
           Object.values(pokedexFinal).forEach((value) => {
@@ -80,7 +85,7 @@ export class PokedexComponent implements OnInit, OnDestroy {
           return of(pokedexFinal);
         }
         pokedexFinal = this.filterPokemons2(searchValue, pokedexFinal);
-        if (Object.values(pokedexFinal).find((item) => !item.isHidden)) {
+        if (Object.values(pokedexFinal).find((item) =>!item.isHidden)) {
           return of(pokedexFinal);
         }
         return this.pokedexService.getPokemon(searchValue).pipe(
@@ -100,6 +105,10 @@ export class PokedexComponent implements OnInit, OnDestroy {
               },
             };
             return of(storeAdded);
+          }),
+          catchError(() => {
+            this.errorCondition = true;
+            return EMPTY;
           })
         );
       })
