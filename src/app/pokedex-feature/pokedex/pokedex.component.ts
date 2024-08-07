@@ -1,23 +1,31 @@
 import { PokedexFacade } from './../../pokedex-data-access/+state/pokedex.facade';
-import { Pokemon } from './../../pokedex-data-access/models/pokemon';
-import { Component, OnDestroy, OnInit, EventEmitter, inject } from '@angular/core';
-import { Router, NavigationStart } from '@angular/router';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  EventEmitter,
+  inject,
+} from '@angular/core';
+import { NavigationStart, Router } from '@angular/router';
 import {
   BehaviorSubject,
   EMPTY,
   Observable,
   Subscription,
+  catchError,
   combineLatest,
-  forkJoin,
+  distinctUntilChanged,
+  exhaustMap,
+  filter,
   of,
+  startWith,
+  switchMap,
 } from 'rxjs';
-import { catchError, filter, startWith, switchMap } from 'rxjs/operators';
 import {
   PokedexCard,
   PokedexRecord,
 } from '../../pokedex-data-access/models/pokedex';
 import { PokedexService } from '../../pokedex-data-access/services/pokedex.service';
-import { PokedexDataStoreService } from './../../pokedex-data-access/services/pokedex-data-store.service';
 import { ScrollPositionService } from '../../utils/services/scroll-position.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
@@ -42,29 +50,54 @@ export class PokedexComponent implements OnInit, OnDestroy {
   public searchFormGroup = new FormGroup({
     [this.searchFormControlName]: this.searchFormControl,
   });
-  public pokedexFiltered$: Observable<PokedexRecord> =
+  public pokedexFiltered$: Observable<PokedexRecord | undefined> =
     new Observable<PokedexRecord>();
 
-  public errorCondition = false
+  public errorCondition = false;
 
   constructor(
     private pokedexService: PokedexService,
-    private pokedexDataStoreService: PokedexDataStoreService,
     private scrollPositionService: ScrollPositionService,
     private router: Router
   ) {}
 
-  public pokedexFacade = inject(PokedexFacade)
+  public pokedexFacade = inject(PokedexFacade);
 
   ngOnInit(): void {
-    this.pokedexFacade.getPokedex(0, 20)
+    combineLatest([
+      this.pokedexFacade.pokedexOffset$.pipe(distinctUntilChanged()),
+      this.pokedexFacade.pokedexLimit$.pipe(distinctUntilChanged()),
+    ]).subscribe(([offset, limit]) => {
+      this.pokedexFacade.getPokedex(offset, limit);
+    });
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        if (event.url.includes('pokemon'))
+          this.scrollPositionService.setScrollPosition(window.scrollY);
+      }
+    });
+
+    this.searchFormControl.valueChanges
+      .pipe(startWith(''))
+      .subscribe((searchTermValue) => {
+        if (!searchTermValue) {
+          this.pokedexFacade.changeVisibility();
+          return;
+        }
+        this.pokedexFacade.filterPokedex(searchTermValue);
+      });
+    this.pokedexFiltered$ = this.pokedexFacade.pokedexRecord$;
+
+    /*  combineLatest([
+      this.pokedexFacade.pokedexOffset$.pipe(take(1)),
+      this.pokedexFacade.pokedexLimit$.pipe(take(1)),
+    ]).subscribe(([offset, limit]) => {
+      this.pokedexFacade.getPokedex(offset, limit);
+    });
     this.pokedexFacade.pokedexRecord$.subscribe((pokedexList) => {
-      console.log(pokedexList)
-    })
-    this.pokedex$ = this.pokedexDataStoreService.getPokedexStore();
-    if (!this.pokedex$.value) {
-      this.loadMore();
-    }
+      console.log(pokedexList);
+    });
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (event.url.includes('pokemon'))
@@ -80,19 +113,18 @@ export class PokedexComponent implements OnInit, OnDestroy {
 
     this.pokedexFiltered$ = combineLatest([
       this.searchFormControl.valueChanges.pipe(startWith('')),
-      this.pokedex$,
+      this.pokedexFacade.pokedexRecord$,
     ]).pipe(
-      switchMap(([searchValue, pokedex]) => {
+      exhaustMap(([searchValue, pokedex]) => {
+        debugger;
         this.errorCondition = false;
         let pokedexFinal = pokedex ?? {};
         if (!searchValue) {
-          Object.values(pokedexFinal).forEach((value) => {
-            value.isHidden = false;
-          });
-          return of(pokedexFinal);
+          this.pokedexFacade.changeVisibility();
+          return EMPTY;
         }
         pokedexFinal = this.filterPokemons2(searchValue, pokedexFinal);
-        if (Object.values(pokedexFinal).find((item) =>!item.isHidden)) {
+        if (Object.values(pokedexFinal).find((item) => !item.isHidden)) {
           return of(pokedexFinal);
         }
         return this.pokedexService.getPokemon(searchValue).pipe(
@@ -119,7 +151,7 @@ export class PokedexComponent implements OnInit, OnDestroy {
           })
         );
       })
-    );
+    ); */
   }
 
   ngOnDestroy(): void {
@@ -136,61 +168,14 @@ export class PokedexComponent implements OnInit, OnDestroy {
     }
     this.loading = true;
     this.completeLoading = false;
-    this.pokedexService
-      .getPokedex(
-        this.pokedexDataStoreService.offset,
-        this.pokedexDataStoreService.limit
-      )
-      .pipe(
-        filter((data) => !!data),
-        switchMap((data) => {
-          data.results.forEach((item) => {
-            if (!this.results) {
-              this.results = {};
-            }
-            this.results[item.name] = {
-              name: item.name,
-              url: item.url,
-              isHidden: false,
-            };
-          });
-          this.pokedexDataStoreService.offset +=
-            this.pokedexDataStoreService.limit;
-          this.loading = false;
-          return forkJoin(
-            Object.values(this.results ?? {}).map((item) => {
-              const id = Number(item.url.split('/')[6]);
-              return this.pokedexService.getPokemon(id);
-            })
-          );
-        })
-      )
-      .subscribe((data) => {
-        data.forEach((item) => {
-          if (!this.results) {
-            this.results = {};
-          }
-          const newPokemon = {
-            ...this.results[item.name],
-            imgUrl: item.sprites.other.home.front_default,
-          };
-          this.pokedexDataStoreService.setPokedexStore({
-            [item.name]: {
-              ...newPokemon,
-            },
-          });
-          this.pokemonOrdered?.push(newPokemon);
-        });
-        this.completeLoading = true;
-      });
   }
 
-  filterPokemons2(searchValue: string, pokedex: PokedexRecord) {
+  /* filterPokemons2(searchValue: string, pokedex: PokedexRecord) {
     Object.values(pokedex).forEach((value) => {
       if (!value.name.includes(searchValue)) {
         value.isHidden = true;
       }
     });
     return pokedex;
-  }
+  } */
 }

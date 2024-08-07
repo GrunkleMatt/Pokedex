@@ -9,3 +9,15 @@ export const selectPokedexRecord = createSelector(
     return state.pokedexRecord;
   }
 );
+export const selectPokedexOffset = createSelector(
+  selectPokedexRecordState,
+  (state) => {
+    return state.offset;
+  }
+);
+export const selectPokedexLimit = createSelector(
+  selectPokedexRecordState,
+  (state) => {
+    return state.limit;
+  }
+);
