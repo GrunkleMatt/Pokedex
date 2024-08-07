@@ -21,8 +21,8 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
+    ReactiveFormsModule,
     PokedexUiModule,
-    ReactiveFormsModule
   ]
 })
 export class PokedexFeatureModule { }

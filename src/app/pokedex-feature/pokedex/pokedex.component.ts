@@ -1,5 +1,6 @@
+import { PokedexFacade } from './../../pokedex-data-access/+state/pokedex.facade';
 import { Pokemon } from './../../pokedex-data-access/models/pokemon';
-import { Component, OnDestroy, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, EventEmitter, inject } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import {
   BehaviorSubject,
@@ -53,7 +54,13 @@ export class PokedexComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
+  public pokedexFacade = inject(PokedexFacade)
+
   ngOnInit(): void {
+    this.pokedexFacade.getPokedex(0, 20)
+    this.pokedexFacade.pokedexRecord$.subscribe((pokedexList) => {
+      console.log(pokedexList)
+    })
     this.pokedex$ = this.pokedexDataStoreService.getPokedexStore();
     if (!this.pokedex$.value) {
       this.loadMore();
