@@ -88,7 +88,6 @@ export class PokedexComponent implements OnInit, OnDestroy {
         this.pokedexFacade.filterPokedex(searchTermValue);
       });
     this.pokedexFiltered$ = this.pokedexFacade.pokedexRecord$;
-
     /*  combineLatest([
       this.pokedexFacade.pokedexOffset$.pipe(take(1)),
       this.pokedexFacade.pokedexLimit$.pipe(take(1)),
@@ -163,11 +162,7 @@ export class PokedexComponent implements OnInit, OnDestroy {
   }
 
   loadMore(): void {
-    if (this.loading) {
-      return;
-    }
-    this.loading = true;
-    this.completeLoading = false;
+  this.pokedexFacade.loadMore()
   }
 
   /* filterPokemons2(searchValue: string, pokedex: PokedexRecord) {

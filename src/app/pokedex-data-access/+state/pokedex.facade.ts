@@ -11,7 +11,7 @@ export class PokedexFacade {
   getPokedex(offset: number, limit: number) {
     this.store.dispatch(PokedexActions.getPokedex({offset, limit}))
   }
-  
+
   public pokedexRecord$ = this.store.select(selectPokedexRecord)
   public pokedexOffset$ = this.store.select(selectPokedexOffset)
   public pokedexLimit$ = this.store.select(selectPokedexLimit)
@@ -22,5 +22,9 @@ export class PokedexFacade {
 
   filterPokedex (searchTerm: string) {
     this.store.dispatch(PokedexActions.filterPokedex({searchTerm}))
+  }
+
+  loadMore () {
+    this.store.dispatch(PokedexActions.triggerLoading())
   }
 }

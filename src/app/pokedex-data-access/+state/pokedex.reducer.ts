@@ -1,8 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { PokedexRecord } from '../models/pokedex';
 import { PokedexActions } from './pokedex.actions';
-import { state } from '@angular/animations';
-import { EMPTY } from 'rxjs';
 
 export interface PokedexRecordState {
   offset: number;
@@ -52,5 +50,11 @@ export const pokedexReducer = createReducer(
       ...state,
       pokedexRecord: pokedexCopy,
     };
+  }),
+  on(PokedexActions.triggerLoading, (state) => {
+    return {
+      ...state,
+      limit: state.offset + state.limit
+    }
   })
 );

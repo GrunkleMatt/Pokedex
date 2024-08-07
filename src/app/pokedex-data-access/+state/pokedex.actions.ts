@@ -9,5 +9,6 @@ export const PokedexActions = createActionGroup({
     'Set Pokedex': props<{ pokedexRecord: PokedexRecord }>(),
     'Set Pokedex Visibility': emptyProps(),
     'Filter Pokedex': props<{ searchTerm: string}>(),
+    'Trigger loading': emptyProps()
   },
 });
