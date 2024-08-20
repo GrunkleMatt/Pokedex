@@ -4,11 +4,12 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { PokedexService } from '../services/pokedex.service';
 import { PokedexActions } from './pokedex.actions';
 import { exhaustMap, filter, forkJoin, map, switchMap } from 'rxjs';
+import { PokemonService } from '../../pokemon-data-acces/service/pokemon.service';
 
 let results: PokedexRecord = {};
 
 export const loadPokedex = createEffect(
-  (actions$ = inject(Actions), pokedexService = inject(PokedexService)) => {
+  (actions$ = inject(Actions), pokedexService = inject(PokedexService), pokemonService = inject(PokemonService)) => {
     return actions$.pipe(
       ofType(PokedexActions.getPokedex),
       exhaustMap(({ offset, limit }) => {
@@ -25,7 +26,7 @@ export const loadPokedex = createEffect(
             return forkJoin(
               Object.values(results ?? {}).map((item) => {
                 const id = Number(item.url.split('/')[6]);
-                return pokedexService.getPokemon(id);
+                return pokemonService.getPokemon(id);
               })
             );
           }),

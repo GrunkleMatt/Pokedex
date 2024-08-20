@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { PokedexService } from '../../pokedex-data-access/services/pokedex.service';
-import { Pokemon } from '../../pokedex-data-access/models/pokemon';
+import { PokemonService } from './../../pokemon-data-acces/service/pokemon.service';
+import { Component, OnInit } from '@angular/core';
+import { Pokemon } from '../../pokemon-data-acces/models/pokemon';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -10,20 +10,19 @@ import { ActivatedRoute } from '@angular/router';
 })
 
 export class PokemonComponent implements OnInit {
+
   public pokemonResult?: Pokemon;
+
   constructor(
-    private pokedexService: PokedexService,
+    private pokemonService: PokemonService,
     private route: ActivatedRoute,
   ) {}
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.pokedexService.getPokemon(id).subscribe((data) => {
+    this.pokemonService.getPokemon(id).subscribe((data) => {
       this.pokemonResult = data
     })
   }
 
-  buttonClicked(a: string)
-  {
-    alert(a)
-  }
 }

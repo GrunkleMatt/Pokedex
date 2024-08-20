@@ -7,7 +7,4 @@
     <h2 class="h5">Ability: {{ ability.ability.name | titlecase }}</h2>
   </div>
   <img [src]="pokemonResult?.sprites?.other?.home?.front_default" [alt]="pokemonResult?.name" class="img-fluid my-3">
-  <div class="button-container">
-    <button (click)="buttonClicked.emit(pokemonResult?.name)" class="btn btn-warning btn-lg">CLICK HERE</button>
-  </div>
 </div>
