@@ -11,7 +11,9 @@ import { PokedexNotFoundComponent } from './pokedex-not-found/pokedex-not-found.
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import * as pokedexEffects from './pokedex-data-access/+state/pokedex.effects';
+import * as pokemonEffects from './pokemon-data-acces/+state/pokemon.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { pokemonReducer } from './pokemon-data-acces/+state/pokemon.reducer';
 
 
 @NgModule({
@@ -23,7 +25,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     AppRoutingModule,
     HttpClientModule,
     NgbModule,
-    StoreModule.forRoot({ pokedex: pokedexReducer }),
+    StoreModule.forRoot({ pokedex: pokedexReducer, pokemon: pokemonReducer }),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       autoPause: true, // Pauses recording actions and state changes when the extension window is not open
@@ -31,7 +33,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       traceLimit: 75, // maximum stack trace frames to be stored (in case trace option was provided as true)
       connectInZone: true // If set to true, the connection is established within the Angular zone
     }),
-    EffectsModule.forRoot(pokedexEffects),
+    EffectsModule.forRoot([pokedexEffects, pokemonEffects]),
     PokedexFeatureModule,
   ],
   providers: [],

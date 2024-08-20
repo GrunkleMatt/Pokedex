@@ -1,7 +1,9 @@
+import { PokemonFacade } from './../../pokemon-data-acces/+state/pokemon.facade';
 import { PokemonService } from './../../pokemon-data-acces/service/pokemon.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Pokemon } from '../../pokemon-data-acces/models/pokemon';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-pokemon',
@@ -11,7 +13,8 @@ import { ActivatedRoute } from '@angular/router';
 
 export class PokemonComponent implements OnInit {
 
-  public pokemonResult?: Pokemon;
+  private pokemonFacade = inject(PokemonFacade)
+  public pokemonResult$?: Observable<Pokemon>;
 
   constructor(
     private pokemonService: PokemonService,
@@ -20,9 +23,8 @@ export class PokemonComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.pokemonService.getPokemon(id).subscribe((data) => {
-      this.pokemonResult = data
-    })
+    this.pokemonFacade.getPokemon(id)
+    this.pokemonResult$ = this.pokemonFacade.pokemon$
   }
 
 }

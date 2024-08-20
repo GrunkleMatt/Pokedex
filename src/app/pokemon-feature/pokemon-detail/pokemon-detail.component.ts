@@ -7,8 +7,6 @@ import { Pokemon } from '../../pokemon-data-acces/models/pokemon';
   styleUrl: './pokemon-detail.component.scss'
 })
 export class PokemonDetailComponent {
-
   @Input() pokemonResult?: Pokemon;
   @Output() buttonClicked = new EventEmitter<string>();
-
 }
